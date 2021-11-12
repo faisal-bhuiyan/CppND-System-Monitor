@@ -168,7 +168,6 @@ float LinuxParser::CpuUtilization() {
     float steal = stof(cpu_values[7]);
     float PrevIdle = 0.0;
     float Idle = idle + iowait;
-    float PrevNonIdle = 0.0;
     float NonIdle = user + nice + irq + softirq + system + steal;
     float PrevTotal = 0.0;
     float Total = Idle + NonIdle;
@@ -180,7 +179,7 @@ float LinuxParser::CpuUtilization() {
     // calculate CPU Utilization
     float CPU_Percentage = (totald - idled) / totald;
 
-    return CPU_Percentage;    
+    return CPU_Percentage;
 }
 
 // Read and return the total number of processes
@@ -348,11 +347,13 @@ string LinuxParser::User(int pid) {
 
             while (linestream >> name >> passwd >> id) {
                 if (id == uid) {
-                    return name;
+                    break;
                 }
             }
         }
     }
+
+    return name;
 }
 
 // Read and return the uptime of a process
