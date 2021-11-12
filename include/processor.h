@@ -2,12 +2,12 @@
 #define PROCESSOR_H
 
 class Processor {
- public:
-  //Processor() { ; }
+public:
+    Processor() { ; }
 
-  float Utilization();
+    float Utilization();
 
- private:
+private:
 };
 
 #endif
