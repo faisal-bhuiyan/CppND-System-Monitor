@@ -34,6 +34,8 @@ string LinuxParser::OperatingSystem() {
         }
     }
 
+    filestream.close();
+
     return value;
 }
 
@@ -350,13 +352,13 @@ string LinuxParser::User(int pid) {
 
             while (linestream >> name >> passwd >> id) {
                 if (id == uid) {
-                    break;
+                    return name;
                 }
             }
         }
     }
 
-    return name;
+    return string();
 }
 
 long LinuxParser::UpTime(int pid) {
