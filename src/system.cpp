@@ -28,6 +28,8 @@ System::System() {
         }
     }
 
+    std::sort(procs.begin(), procs.end());
+
     this->processes_ = procs;
 }
 
