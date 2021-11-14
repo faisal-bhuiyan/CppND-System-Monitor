@@ -7,10 +7,18 @@
 #include "system.h"
 
 namespace NCursesDisplay {
-void Display(System& system, int n = 10);
+// Displays everything in the command window
+void Display(System& system, int n_processes = 10);
+
+// Displays the info regarding the system
 void DisplaySystem(System& system, WINDOW* window);
-void DisplayProcesses(std::vector<Process>& processes, WINDOW* window, int n);
+
+// Displays the info regarding the processes
+void DisplayProcesses(std::vector<Process>& processes, WINDOW* window, int n_processes);
+
+// Shows the progress bar
 std::string ProgressBar(float percent);
 };  // namespace NCursesDisplay
 
 #endif
+

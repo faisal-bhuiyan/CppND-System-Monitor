@@ -5,6 +5,7 @@ class Processor {
 public:
     Processor() { ; }
 
+    // Returns the aggregate CPU utilization
     float Utilization();
 
 private:
