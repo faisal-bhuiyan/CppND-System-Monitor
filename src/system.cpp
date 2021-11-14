@@ -20,7 +20,12 @@ System::System() {
 
     vector<Process> procs;
     for (const auto& pid : LinuxParser::Pids()) {
-        procs.emplace_back(Process(pid));
+        auto proc = Process(pid);
+
+        if (proc.Pid() > 0 && proc.User() != string() && proc.Command() != string() &&
+            proc.CpuUtilization() > 0. && proc.Ram() != string() && proc.UpTime() > 0) {
+            procs.emplace_back(proc);
+        }
     }
 
     this->processes_ = procs;

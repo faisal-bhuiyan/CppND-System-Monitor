@@ -7,8 +7,8 @@
 #include "system.h"
 
 namespace NCursesDisplay {
-// Displays everything in the command window
-void Display(System& system, int n_processes = 20);
+// Displays all components of the system monitor
+void Display(System& system, int n_processes = 10);
 
 // Displays the info regarding the system
 void DisplaySystem(System& system, WINDOW* window);
