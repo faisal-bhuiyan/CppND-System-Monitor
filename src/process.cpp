@@ -41,10 +41,6 @@ long int Process::UpTime() {
 }
 
 bool Process::operator<(const Process& other) const {
-    if (this->cpu_usage_ < other.cpu_usage_) {
-        return true;
-    }
-
-    return false;
+    return this->cpu_usage_ > other.cpu_usage_;
 }
 

@@ -65,17 +65,17 @@ enum CPUStates {
 // Reads and returns CPU utilization
 float CpuUtilization();
 
-// Reads and returns the number of jiffies for the system
-long Jiffies();
+// // Reads and returns the number of jiffies for the system
+// long Jiffies();
 
-// Reads and returns the number of active jiffies for a PID
-long ActiveJiffies();
+// // Reads and returns the number of active jiffies for a PID
+// long ActiveJiffies();
 
-// Reads and returns the number of active jiffies for the system
-long ActiveJiffies(int pid);
+// // Reads and returns the number of active jiffies for the system
+// long ActiveJiffies(int pid);
 
-// Reads and returns the number of idle jiffies for the system
-long IdleJiffies();
+// // Reads and returns the number of idle jiffies for the system
+// long IdleJiffies();
 
 /*
 * Processes

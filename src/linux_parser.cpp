@@ -48,6 +48,8 @@ string LinuxParser::Kernel() {
         linestream >> os >> version >> kernel;
     }
 
+    stream.close();
+
     return kernel;
 }
 
@@ -95,7 +97,9 @@ float LinuxParser::MemoryUtilization() {
         }
     }
 
-    return memtotal - memfree;
+    stream.close();
+
+    return (1 - memfree / memtotal);
 }
 
 long LinuxParser::UpTime() {
@@ -109,24 +113,26 @@ long LinuxParser::UpTime() {
         linestream >> uptime >> idletime;
     }
 
+    stream.close();
+
     return stol(uptime);
 }
 
-long LinuxParser::Jiffies() {
-    return 0;
-}
+// long LinuxParser::Jiffies() {
+//     return 0;
+// }
 
-long LinuxParser::ActiveJiffies(int pid) {
-    return 0;
-}
+// long LinuxParser::ActiveJiffies(int pid) {
+//     return 0;
+// }
 
-long LinuxParser::ActiveJiffies() {
-    return 0;
-}
+// long LinuxParser::ActiveJiffies() {
+//     return 0;
+// }
 
-long LinuxParser::IdleJiffies() {
-    return 0;
-}
+// long LinuxParser::IdleJiffies() {
+//     return 0;
+// }
 
 float LinuxParser::CpuUtilization() {
     vector<string> cpu_values;
@@ -146,6 +152,8 @@ float LinuxParser::CpuUtilization() {
             count++;
         }
     }
+
+    stream.close();
 
     float user = stof(cpu_values[0]);
     float nice = stof(cpu_values[1]);
@@ -191,6 +199,8 @@ int LinuxParser::TotalProcesses() {
         }
     }
 
+    stream.close();
+
     return total_proc;
 }
 
@@ -214,6 +224,8 @@ int LinuxParser::RunningProcesses() {
         }
     }
 
+    stream.close();
+
     return running_proc;
 }
 
@@ -228,6 +240,8 @@ string LinuxParser::Command(int pid) {
             command = line;
         }
     }
+
+    stream.close();
 
     return command;
 }
@@ -246,6 +260,8 @@ float LinuxParser::Cpu(int pid) {
                 linestream >> target;
             }
         }
+
+        stream.close();
 
         return target;
     };
@@ -280,12 +296,15 @@ string LinuxParser::Ram(int pid) {
             std::istringstream linestream(line);
 
             while (linestream >> key >> value) {
-                if (key == "VmSize:") {
-                    memory = stoi(value) / 1000;
+                // Using VmRSS rather than VmSize
+                if (key == "VmRSS:") {
+                    memory = stoi(value) / 1024;  // Converting to MB
                 }
             }
         }
     }
+
+    stream.close();
 
     return std::to_string(memory);
 }
@@ -309,6 +328,8 @@ string LinuxParser::Uid(int pid) {
             }
         }
     }
+
+    stream.close();
 
     return uid;
 }
@@ -351,6 +372,8 @@ long LinuxParser::UpTime(int pid) {
             linestream >> uptime;
         }
     }
+
+    stream.close();
 
     return stol(uptime) / sysconf(_SC_CLK_TCK);
 }
