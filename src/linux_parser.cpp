@@ -12,12 +12,13 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+// Searches for a particular value in a file by a key and returns it
 template <typename T>
-T LinuxParser::FindValueByKey(const string& key_filter, const string& filename) {
+T _FindValueByKey(const string& key_filter, const string& filename) {
     string line, key;
     T value;
 
-    std::ifstream stream(kProcDirectory + filename);
+    std::ifstream stream(LinuxParser::kProcDirectory + filename);
 
     if (stream.is_open()) {
         while (std::getline(stream, line)) {
@@ -36,12 +37,13 @@ T LinuxParser::FindValueByKey(const string& key_filter, const string& filename) 
     return value;
 };
 
+// Returns a value from a file
 template <typename T>
-T LinuxParser::GetValueFromFile(const string& filename) {
+T _GetValueFromFile(const string& filename) {
     string line;
     T value;
 
-    std::ifstream stream(kProcDirectory + filename);
+    std::ifstream stream(LinuxParser::kProcDirectory + filename);
 
     if (stream.is_open()) {
         std::getline(stream, line);
@@ -53,6 +55,24 @@ T LinuxParser::GetValueFromFile(const string& filename) {
 
     return value;
 };
+
+// Wrapping std::stof or std::stol because it may throw an exception
+template <typename T, typename F>
+T _StringToNumber(const std::string& str, F f) {
+    try {
+        return f(str);
+    } catch (...) {
+        return 0.;
+    }
+}
+
+float _stof(std::string str="0") {
+    return stof(str);
+}
+
+long _stol(std::string str="0") {
+    return stol(str);
+}
 
 string LinuxParser::OperatingSystem() {
     string line;
@@ -125,8 +145,8 @@ float LinuxParser::MemoryUtilization() {
     string key_1 = "MemTotal:";
     string key_2 = "MemFree:";
 
-    float total = FindValueByKey<float>(key_1, kMeminfoFilename);
-    float free = FindValueByKey<float>(key_2, kMeminfoFilename);
+    float total = _FindValueByKey<float>(key_1, kMeminfoFilename);
+    float free = _FindValueByKey<float>(key_2, kMeminfoFilename);
 
     return (total - free) / total;
 }
@@ -145,7 +165,7 @@ long LinuxParser::UpTime() {
 
     stream.close();
 
-    return stol(uptime);
+    return _StringToNumber<long>(uptime, _stol);
 }
 
 // long LinuxParser::Jiffies() {
@@ -186,14 +206,14 @@ float LinuxParser::CpuUtilization() {
 
     stream.close();
 
-    float user = stof(cpu_values[0]);
-    float nice = stof(cpu_values[1]);
-    float system = stof(cpu_values[2]);
-    float idle = stof(cpu_values[3]);
-    float iowait = stof(cpu_values[4]);
-    float irq = stof(cpu_values[5]);
-    float softirq = stof(cpu_values[6]);
-    float steal = stof(cpu_values[7]);
+    float user = _StringToNumber<float>(cpu_values[0], _stof);
+    float nice = _StringToNumber<float>(cpu_values[1], _stof);
+    float system = _StringToNumber<float>(cpu_values[2], _stof);
+    float idle = _StringToNumber<float>(cpu_values[3], _stof);
+    float iowait = _StringToNumber<float>(cpu_values[4], _stof);
+    float irq = _StringToNumber<float>(cpu_values[5], _stof);
+    float softirq = _StringToNumber<float>(cpu_values[6], _stof);
+    float steal = _StringToNumber<float>(cpu_values[7], _stof);
     float PrevIdle = 0.0;
     float Idle = idle + iowait;
     float NonIdle = user + nice + irq + softirq + system + steal;
@@ -212,17 +232,17 @@ float LinuxParser::CpuUtilization() {
 
 int LinuxParser::TotalProcesses() {
     string key = "processes";
-    return FindValueByKey<int>(key, kStatFilename);
+    return _FindValueByKey<int>(key, kStatFilename);
 }
 
 int LinuxParser::RunningProcesses() {
     string key = "procs_running";
-    return FindValueByKey<int>(key, kStatFilename);
+    return _FindValueByKey<int>(key, kStatFilename);
 }
 
 string LinuxParser::Command(int pid) {
     string filename = to_string(pid) + kCmdlineFilename;
-    return string(GetValueFromFile<string>(filename));
+    return string(_GetValueFromFile<string>(filename));
 }
 
 float LinuxParser::Cpu(int pid) {
@@ -253,10 +273,10 @@ float LinuxParser::Cpu(int pid) {
 
     float Hertz = sysconf(_SC_CLK_TCK);
 
-    float total_time = stof(u_time) + stof(s_time);
-    total_time += stof(cu_time) + stof(cs_time);
+    float total_time = _StringToNumber<float>(u_time, _stof) + _StringToNumber<float>(s_time, _stof);
+    total_time += _StringToNumber<float>(cu_time, _stof) + _StringToNumber<float>(cs_time, _stof);
 
-    float seconds = LinuxParser::UpTime() - (stof(start_time) / Hertz);
+    float seconds = LinuxParser::UpTime() - (_StringToNumber<float>(start_time, _stof) / Hertz);
     float cpu_usage = (total_time / Hertz) / seconds;
 
     return cpu_usage;
@@ -264,7 +284,7 @@ float LinuxParser::Cpu(int pid) {
 
 string LinuxParser::Ram(int pid) {
     string key = "VmRSS:";
-    string value = string(FindValueByKey<string>(key, to_string(pid) + kStatusFilename));
+    string value = string(_FindValueByKey<string>(key, to_string(pid) + kStatusFilename));
 
     int memory_MB = stoi(value) / 1024;  // Converting to MB
 
@@ -273,7 +293,7 @@ string LinuxParser::Ram(int pid) {
 
 string LinuxParser::Uid(int pid) {
     string key = "Uid:";
-    return FindValueByKey<string>(key, to_string(pid) + kStatusFilename);
+    return _FindValueByKey<string>(key, to_string(pid) + kStatusFilename);
 }
 
 string LinuxParser::User(int pid) {
@@ -318,6 +338,6 @@ long LinuxParser::UpTime(int pid) {
 
     stream.close();
 
-    return stol(uptime) / sysconf(_SC_CLK_TCK);
+    return _StringToNumber<long>(uptime, _stol) / sysconf(_SC_CLK_TCK);
 }
 

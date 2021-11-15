@@ -22,17 +22,6 @@ const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
 /*
-* Helper functions
-*/
-// Searches for a particular value in a file by a key and returns it
-template <typename T>
-T FindValueByKey(const std::string& key_filter, const std::string& filename);
-
-// Returns a value from a file
-template <typename T>
-T GetValueFromFile(const std::string& filename);
-
-/*
 * System
 */
 // Reads and returns the system memory utilization
