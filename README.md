@@ -1,6 +1,6 @@
 # CppND-System-Monitor
 
-A simple system monitor for Linux OS written in C++.
+A basic and simple system monitor for Linux OS written in C++.
 
 ## ncurses
 [ncurses](https://www.gnu.org/software/ncurses/) is a library that facilitates text-based graphical output in the terminal. This project relies on ncurses to display the output.
@@ -19,6 +19,7 @@ cmake ..
 make
 ```
 
-3. Run the resulting executable: `./build/monitor`
+3. Run the resulting executable: `./build/monitor`. The executable should produce the following system monitor.
+
 ![Screenshot of the System Monitor program](images/System_Monitor_FHB_2.png)
 
